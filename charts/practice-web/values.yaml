@@ -1,0 +1,17 @@
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: stable-alpine
+
+service:
+  port: 80
+  targetPort: 80
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 32Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
