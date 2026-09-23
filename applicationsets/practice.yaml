@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: practice
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - list:
+        elements:
+          - environment: local
+  template:
+    metadata:
+      name: '{{ .environment }}-practice-web'
+    spec:
+      project: default
+      sources:
+        - repoURL: https://github.com/vorugantivishwanath-byte/argocd-practice.git
+          targetRevision: main
+          path: charts/practice-web
+          helm:
+            releaseName: practice-web
+            valueFiles:
+              - '$values/environments/{{ .environment }}/values.yaml'
+        - repoURL: https://github.com/vorugantivishwanath-byte/argocd-practice.git
+          targetRevision: main
+          ref: values
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: 'practice-{{ .environment }}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
